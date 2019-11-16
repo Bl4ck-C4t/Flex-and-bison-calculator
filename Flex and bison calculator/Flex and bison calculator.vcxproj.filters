@@ -40,7 +40,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="parser.h">
+    <ClInclude Include="parser.hpp">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

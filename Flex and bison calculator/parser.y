@@ -1,6 +1,6 @@
-%defines "parser.h"
 
 %{
+	#include <stdio.h>
 	#include <cmath>
 	#include <cstdio>
 	#include <iostream>
@@ -17,29 +17,31 @@
 	using namespace std;
 %}
 
-%define api.value.type { double }
+%token NUMBER
+%token ADD SUB MUL DIV ABS
+%token OP CP
+%token EOL
 
-%token NUM
+%%
 
-%left '-' '+'
-%left '*' '/'
+calclist: /* nothing */
+ | calclist exp EOL { printf("= %d\n> ", $2); }
+ | calclist EOL { printf("> "); } /* blank line or a comment */
+ ;
 
-%%		/* the grammars here */
+exp: factor
+ | exp ADD exp { $$ = $1 + $3; }
+ | exp SUB factor { $$ = $1 - $3; }
+ | exp ABS factor { $$ = $1 | $3; }
+ ;
 
-input: %empty
-	| input line
-	;
+factor: term
+ | factor MUL term { $$ = $1 * $3; }
+ | factor DIV term { $$ = $1 / $3; }
+ ;
 
-line: '\n'
-	| exp '\n'	{ cout << " =>" << $1 << endl; }
-	; 
-
-exp: NUM		   { $$ = $1; }
-	| exp '+' exp  { $$ = $1 + $3; }
-	| exp '-' exp  { $$ = $1 - $3; }
-	| exp '*' exp  { $$ = $1 * $3; }
-	| exp '/' exp  { $$ = $1 / $3; }
-	| '(' exp ')'  { $$ = $2; }
-	;
-
+term: NUMBER
+ | ABS term { $$ = $2 >= 0? $2 : - $2; }
+ | OP exp CP { $$ = $2; }
+ ;
 %%
